@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		body,html{
+			margin:0;
+			width:100%;
+			height:100%;
+		}
+	</style>
+</head>
+<body>
+	<script>
+		/**
+		* 鱼的类
+		*/
+		class Fish {
+			constructor() {
+				//小鱼的地址
+				this.src= "./fish.png";
+				//小鱼的宽度和高度
+				this.imageW = 40;
+				this.imageH = 40;
+				//小鱼目前的位置
+				this.nowX = 0;
+				this.nowY = 0;
+				//小鱼要到的地方
+				this.destX = 0;
+				this.destY = 0;
+				this.init();
+			}
+			init() {
+				this.img = new Image();
+				this.img.src = this.src;
+			}
+		}
+
+		/**
+		* 创建canvas， 并插入到DOM中
+		*/
+		class Can {
+			constructor(el) {
+				var eCan = document.createElement("canvas");
+				el.appendChild(eCan);
+				eCan.style.top = "0";
+				eCan.style.left = "0";
+				eCan.style.position = "fixed";
+				eCan.style.zIndex = 100;
+				eCan.style.pointerEvents = "none";
+				return eCan;
+			}
+		}
+
+		/**
+		* 整体逻辑
+		*/
+		class Fly {
+			constructor(bd, window, fish, can) {
+				this.body = bd;
+				this.win = window;
+				this.fish = fish;
+				this.can = can;
+				this.context = this.can.getContext("2d");
+				this.events();
+				this.requestAni();
+			}
+			//绑定window的事件
+			events() {
+				var _this = this;
+				function move(ev) {
+					_this.fish.destX = ev.clientX;
+					_this.fish.destY = ev.clientY;
+				}
+				function resize() {
+					_this.can.width = _this.body.offsetWidth;
+					_this.can.height = _this.body.offsetHeight;
+				}
+				this.win.addEventListener("mousemove", move);
+				this.win.addEventListener('resize', resize);
+
+				resize();
+			}
+			/**
+			* return position X, Y;
+			*/
+			lerp(a, b, n) {
+				return (1 - n) * a + n * b;
+			}
+			//重复刷新， 更新canvas画图
+			requestAni() {
+				var _this = this;
+				//计算🐟游到的位置
+				this.fish.nowX = this.lerp( this.fish.nowX, this.fish.destX,.1);
+				this.fish.nowY = this.lerp( this.fish.nowY, this.fish.destY-this.fish.imageH/2,.1);
+				//更新到画布
+				this.context.clearRect(0, 0 ,this.can.width, this.can.height);
+				this.context.save();
+				if(this.fish.destX<this.fish.nowX) {
+					this.context.drawImage(this.fish.img, this.fish.nowX , this.fish.nowY , this.fish.imageW,  this.fish.imageW);
+				}else{
+					this.context.scale(-1, 1);
+					this.context.drawImage(this.fish.img, -this.fish.nowX  , this.fish.nowY , this.fish.imageW,  _this.fish.imageW);
+				}
+				this.context.restore();
+				window.requestAnimationFrame(function() {
+					_this.requestAni();
+				});
+			}
+		}
+
+
+
+		var fish = new Fish();
+
+		var can = new Can(document.body);
+
+		var fly = new Fly(document.body, window, fish, can);
+
+	</script>
+</body>
+</html>
