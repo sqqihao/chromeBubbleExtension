@@ -1,14 +1,14 @@
 
-		class Bubble {
+	class Bubble {
 		constructor(_x, _y) {
 			this.x = _x;
 			this.y = _y;
-			this.speedy = Math.floor(Math.random()*4+1);
-			this.w = Math.floor(Math.random()*16);
+			this.speedy = common.getBetween(1,4);
+			this.w = common.getBetween(2, 16);
 			this.smallB = Math.random()>0.7 ? true : false;
 		}
 		move() {
-			this.x += Math.floor(Math.random()*5-2);
+			this.x += common.getBetween(0,5)-2;
 			this.y = this.y-this.speedy;
 		}
 	}
@@ -46,7 +46,7 @@
 		    var r = (a > b) ? a : b;
 		    var ratioX = a / r;
 		    var ratioY = b / r;
-		    var pos = [a,b,3][Math.floor(Math.random()*2)] + 1;
+		    var pos = [a,b,3][common.getBetween(0,2)] + 1;
 		    context.fillStyle = "rgba(255,255,255,0.6)";
 		    context.scale(ratioX, ratioY);
 		    context.beginPath();
@@ -56,34 +56,56 @@
 		    context.restore();
 		}
 	}
-	function resize() {
-		eCan.width = document.body.offsetWidth;
-		eCan.height = document.body.offsetHeight;
+	class BubblePanel {
+		constructor() {
+			this.createCanvas();
+			this.events();
+		}
+		createCanvas() {
+			var eCan = this.eCan = document.createElement("canvas");
+			document.body.appendChild(eCan);
+			eCan.style.top = "0";
+			eCan.style.left = "0";
+			eCan.style.position = "fixed";
+			eCan.style.zIndex = 100;
+			eCan.style.pointerEvents = "none";
+			this.context = eCan.getContext("2d");
+			this.events();
+
+			this.clientX = 0;
+			this.clientY = 0;
+
+			//插件canvas画图面板
+			this.panel = new Panel();
+
+			this.requestAni();
+		}
+		events() {
+			var _this = this;
+			function resize() {
+				_this.eCan.width = document.body.offsetWidth;
+				_this.eCan.height = document.body.offsetHeight;
+			}
+			window.addEventListener('resize', resize);
+			resize();
+
+			document.body.addEventListener("mousemove", function(ev) {
+				_this.clientX = ev.clientX;
+				_this.clientY = ev.clientY;
+			});
+		}
+		//生成泡泡 ＝＝》 计算 ＝＝》》 重新绘图
+		requestAni() {
+			this.panel.create(this.clientX, this.clientY);
+			this.panel.calc();
+			this.panel.draw(this.eCan, this.context);
+			requestAnimationFrame(this.requestAni.bind(this));
+
+		}
 	}
-	document.body.addEventListener("mousemove", function(ev) {
-		x = ev.clientX;
-		y = ev.clientY;
-	});
-
-	window.addEventListener('resize', resize);
-
-	var eCan = document.createElement("canvas");
-	document.body.appendChild(eCan);
-	eCan.style.top = "0";
-	eCan.style.left = "0";
-	eCan.style.position = "fixed";
-	eCan.style.zIndex = 100;
-	eCan.style.pointerEvents = "none";
-	resize();
-
-	var panel = new Panel();
-	var context = eCan.getContext("2d");
-	var x = 0, y =0;
-	!function fn() {
-		requestAnimationFrame(function() {
-			panel.create(x, y);
-			panel.calc();
-			panel.draw(eCan, context);
-			fn();
-		});
-	}();
+	const common = {
+		getBetween : function(start , end) {
+			return Math.floor(Math.random()*(end-start))+start;
+		}
+	}
+	new BubblePanel();
