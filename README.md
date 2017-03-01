@@ -6,5 +6,5 @@ chromeBubbleExtension
 ![img](http://images2015.cnblogs.com/blog/497865/201703/497865-20170301165428813-270833732.gif)    
 提升浏览器体验，欢迎使用哟
 #download
-下载当前目录下的：*chromeExtension.crx*文件；
+下载当前目录下的：**chromeExtension.crx**文件；
 
