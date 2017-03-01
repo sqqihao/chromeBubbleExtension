@@ -11,5 +11,5 @@ chromeBubbleExtension
 ![img](http://images2015.cnblogs.com/blog/497865/201703/497865-20170301192031501-1761314873.png)   
 3:选中插件， 左键拖拽插件到第二步中打开的界面， 界面会出现“拖放以安装”的提示， 然后松手并再确认安装；
 #download
-下载当前目录下的：**chromeExtension.crx**文件；
+下载当前目录下的：**chromeExtension.crx**文件, [从我的博客下载](http://files.cnblogs.com/files/diligenceday/chromeExtension.crx.zip)；
 
